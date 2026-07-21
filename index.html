@@ -347,6 +347,18 @@
       margin-inline: auto;
     }
 
+    .order-preview {
+      max-height: 40vh;
+      overflow-x: hidden;
+      overflow-y: auto;
+      border-bottom: 2px solid var(--line);
+      padding: 0.75rem;
+      background: var(--surface);
+      color: var(--text);
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
     .order-bar__inner {
       display: flex;
       min-height: 5rem;
@@ -680,13 +692,12 @@
   </main>
 
   <aside class="order-bar" aria-label="組單列">
-    <!-- 第 3 段才產生並顯示組單預覽。 -->
-    <div class="order-preview" hidden></div>
+    <div class="order-preview" aria-live="polite" hidden></div>
     <div class="order-bar__inner">
-      <p class="order-count">已選 0 張</p>
+      <p class="order-count" aria-live="polite">已選 0 張</p>
       <div class="order-actions">
-        <button type="button" disabled>複製組單</button>
-        <button type="button" disabled>清空</button>
+        <button id="copy-order-list" type="button" disabled>複製組單</button>
+        <button id="clear-order-list" type="button" disabled>清空</button>
       </div>
     </div>
   </aside>
@@ -824,11 +835,83 @@
         });
       }
 
+      // 第 3 段：組單狀態只存在目前 DOM，不寫入任何瀏覽器儲存空間。
+      function setupOrderBuilder() {
+        const cards = Array.from(document.querySelectorAll(".syntax-card[id^='b']"));
+        const countElement = document.querySelector(".order-count");
+        const previewElement = document.querySelector(".order-preview");
+        const copyOrderButton = document.querySelector("#copy-order-list");
+        const clearOrderButton = document.querySelector("#clear-order-list");
+        const orderBar = document.querySelector(".order-bar");
+
+        // 依卡片目前的 DOM 順序建立資料，確保輸出固定為 b01 → b14。
+        const cardEntries = cards.map((card) => {
+          const checkbox = card.querySelector(".select-control input[type='checkbox']");
+          const orderElement = card.querySelector(".syntax-card__order");
+          const orderLabel = orderElement.querySelector("strong").textContent;
+          const orderText = orderElement.textContent.slice(orderLabel.length);
+          return { checkbox, orderText };
+        });
+
+        function buildOrderText(selectedEntries) {
+          const orderLines = selectedEntries.map((entry, index) => `${index + 1}. ${entry.orderText}`);
+          return ["幫我做/改一個工具,需要:", ...orderLines].join("\n");
+        }
+
+        // 依固定列實際高度補足頁尾空間，避免預覽蓋住最後一張卡。
+        function syncOrderBarSpacing() {
+          const safeBottomSpace = Math.ceil(orderBar.getBoundingClientRect().height) + 32;
+          document.body.style.paddingBottom = `${safeBottomSpace}px`;
+          document.documentElement.style.scrollPaddingBottom = `${safeBottomSpace}px`;
+        }
+
+        function renderOrderState() {
+          const selectedEntries = cardEntries.filter((entry) => entry.checkbox.checked);
+          const selectedCount = selectedEntries.length;
+          const hasSelection = selectedCount > 0;
+          const orderText = hasSelection ? buildOrderText(selectedEntries) : "";
+
+          countElement.textContent = `已選 ${selectedCount} 張`;
+          previewElement.textContent = orderText;
+          previewElement.hidden = !hasSelection;
+          copyOrderButton.disabled = !hasSelection || copyOrderButton.dataset.copying === "true";
+          clearOrderButton.disabled = !hasSelection;
+          window.requestAnimationFrame(syncOrderBarSpacing);
+        }
+
+        cardEntries.forEach((entry) => {
+          // 明確重設，確保重新整理後不沿用瀏覽器表單還原狀態。
+          entry.checkbox.checked = false;
+          entry.checkbox.disabled = false;
+          entry.checkbox.addEventListener("change", renderOrderState);
+        });
+
+        copyOrderButton.addEventListener("click", () => {
+          if (!previewElement.textContent) {
+            return;
+          }
+
+          void runCopyAction(copyOrderButton, previewElement.textContent);
+          window.setTimeout(renderOrderState, COPY_FEEDBACK_MS + 20);
+        });
+
+        clearOrderButton.addEventListener("click", () => {
+          cardEntries.forEach((entry) => {
+            entry.checkbox.checked = false;
+          });
+          renderOrderState();
+        });
+
+        window.addEventListener("resize", syncOrderBarSpacing);
+        renderOrderState();
+      }
+
       setupOrderCopyButtons();
       setupLiveSubstitutionDemo();
       setupCopyButtonDemo();
       setupTypeToConfirmDemo();
       setupCheckboxToggleDemo();
+      setupOrderBuilder();
     })();
   </script>
 </body>
