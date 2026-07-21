@@ -191,6 +191,41 @@
       flex-wrap: wrap;
     }
 
+    .demo-stack {
+      display: grid;
+      gap: 0.65rem;
+    }
+
+    .demo-stack p {
+      margin: 0;
+    }
+
+    .demo-output,
+    .demo-status {
+      min-height: 1.8rem;
+      color: var(--text);
+    }
+
+    .demo-target {
+      font-weight: 700;
+    }
+
+    .sample-box details {
+      color: var(--text);
+    }
+
+    .sample-box summary {
+      display: flex;
+      min-height: 48px;
+      align-items: center;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .sample-box details p {
+      margin: 0.5rem 0 0;
+    }
+
     .mini-block {
       min-width: 3.5rem;
       border: 2px solid var(--line);
@@ -469,11 +504,10 @@
             <h3>即時代入(輸入同步)</h3>
             <p class="syntax-card__plain">名字填一次,整份指令自動換</p>
             <p class="syntax-card__order"><strong>下單例句：</strong>填一次,全文指令同步代入</p>
-            <div class="sample-box" aria-label="即時代入靜態示意">
-              <div class="sample-row">
-                <input class="mini-input" type="text" value="王小明" aria-label="姓名示意" disabled>
-                <span>你好，王小明</span>
-              </div>
+            <div class="sample-box demo-stack" aria-label="即時代入活樣品">
+              <label for="b07-demo-input">姓名</label>
+              <input class="mini-input" id="b07-demo-input" type="text" value="王小明">
+              <p class="demo-output" id="b07-demo-output" aria-live="polite">你好，王小明</p>
             </div>
           </div>
           <footer class="syntax-card__footer">
@@ -487,8 +521,9 @@
             <h3>copy button(一鍵複製)</h3>
             <p class="syntax-card__plain">按完顯「已複製」,舊瀏覽器走備援</p>
             <p class="syntax-card__order"><strong>下單例句：</strong>每條指令加一鍵複製含備援</p>
-            <div class="sample-box" aria-label="一鍵複製靜態示意">
-              <button type="button" disabled>複製</button>
+            <div class="sample-box demo-stack" aria-label="一鍵複製活樣品">
+              <p id="b08-demo-text">示範文字</p>
+              <button id="b08-demo-copy" type="button">複製示範文字</button>
             </div>
           </div>
           <footer class="syntax-card__footer">
@@ -502,11 +537,13 @@
             <h3>type-to-confirm(打字確認連鎖)</h3>
             <p class="syntax-card__plain">名字打對,危險按鈕才解鎖</p>
             <p class="syntax-card__order"><strong>下單例句：</strong>危險操作加打字確認連鎖</p>
-            <div class="sample-box" aria-label="打字確認連鎖靜態示意">
-              <div class="sample-row">
-                <input class="mini-input" type="text" value="請輸入名稱" aria-label="確認名稱示意" disabled>
-                <button type="button" disabled>執行</button>
-              </div>
+            <div class="sample-box demo-stack" aria-label="打字確認連鎖活樣品">
+              <p>請完整輸入指定文字：<span class="demo-target" id="b09-demo-target">type-to-confirm</span></p>
+              <p>大小寫及前後空白都必須完全一致。</p>
+              <label for="b09-demo-input">確認文字</label>
+              <input class="mini-input" id="b09-demo-input" type="text" autocomplete="off">
+              <button id="b09-demo-action" type="button" disabled>示範危險操作</button>
+              <p class="demo-status" id="b09-demo-status" role="status" aria-live="polite"></p>
             </div>
           </div>
           <footer class="syntax-card__footer">
@@ -535,8 +572,11 @@
             <h3>details/summary(原生摺疊面板)</h3>
             <p class="syntax-card__plain">點標題就展開收合,免寫程式</p>
             <p class="syntax-card__order"><strong>下單例句：</strong>這章用 details 摺疊</p>
-            <div class="sample-box" aria-label="摺疊面板靜態示意">
-              <div class="mini-block">▶ 摺疊面板標題</div>
+            <div class="sample-box" aria-label="摺疊面板活樣品">
+              <details>
+                <summary>摺疊面板標題</summary>
+                <p>這是展開後看見的內容。</p>
+              </details>
             </div>
           </div>
           <footer class="syntax-card__footer">
@@ -550,11 +590,12 @@
             <h3>checkbox+toggle(勾選切換)</h3>
             <p class="syntax-card__plain">勾選框帶動顯示/隱藏</p>
             <p class="syntax-card__order"><strong>下單例句：</strong>勾了才顯示下一步</p>
-            <div class="sample-box" aria-label="勾選切換靜態示意">
-              <div class="mini-toggle">
-                <input type="checkbox" aria-label="勾選切換示意" disabled>
-                <span>勾了才顯示下一步</span>
-              </div>
+            <div class="sample-box demo-stack" aria-label="勾選切換活樣品">
+              <label class="mini-toggle" for="b12-demo-toggle">
+                <input id="b12-demo-toggle" type="checkbox">
+                <span>示範勾選框</span>
+              </label>
+              <p class="demo-output" id="b12-demo-next" hidden>下一步內容</p>
             </div>
           </div>
           <footer class="syntax-card__footer">
@@ -628,5 +669,146 @@
       </div>
     </div>
   </aside>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const COPY_SUCCESS_TEXT = "已複製";
+      const COPY_FEEDBACK_MS = 1200;
+
+      // 舊瀏覽器備援：建立暫時文字區，選取後呼叫 execCommand('copy')。
+      function copyWithLegacyFallback(text) {
+        const temporaryTextarea = document.createElement("textarea");
+        temporaryTextarea.value = text;
+        temporaryTextarea.setAttribute("readonly", "");
+        temporaryTextarea.style.position = "fixed";
+        temporaryTextarea.style.inset = "0 auto auto 0";
+        temporaryTextarea.style.width = "1px";
+        temporaryTextarea.style.height = "1px";
+        temporaryTextarea.style.opacity = "0";
+        document.body.appendChild(temporaryTextarea);
+        temporaryTextarea.focus();
+        temporaryTextarea.select();
+        temporaryTextarea.setSelectionRange(0, temporaryTextarea.value.length);
+
+        let copied = false;
+        try {
+          copied = document.execCommand("copy");
+        } catch (error) {
+          copied = false;
+        } finally {
+          temporaryTextarea.remove();
+        }
+
+        return copied;
+      }
+
+      // 優先使用 Clipboard API；失敗或不可用時才走舊瀏覽器備援。
+      async function copyText(text) {
+        if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+          try {
+            await navigator.clipboard.writeText(text);
+            return true;
+          } catch (error) {
+            // Clipboard API 失敗後繼續嘗試舊版備援，不在此處假報成功。
+          }
+        }
+
+        return copyWithLegacyFallback(text);
+      }
+
+      // 統一處理成功 1.2 秒回饋與明確失敗提示。
+      async function runCopyAction(button, text) {
+        if (button.dataset.copying === "true") {
+          return;
+        }
+
+        const originalText = button.textContent;
+        button.dataset.copying = "true";
+        button.disabled = true;
+        const copied = await copyText(text);
+
+        if (copied) {
+          button.textContent = COPY_SUCCESS_TEXT;
+        } else {
+          button.textContent = "複製失敗";
+          window.prompt("自動複製失敗，請手動複製以下文字：", text);
+        }
+
+        window.setTimeout(() => {
+          button.textContent = originalText;
+          button.disabled = false;
+          delete button.dataset.copying;
+        }, COPY_FEEDBACK_MS);
+      }
+
+      // 啟用 b01～b14 卡底的下單句複製；只取下單例句本身，不含標籤或其他文字。
+      function setupOrderCopyButtons() {
+        const cards = document.querySelectorAll(".syntax-card[id^='b']");
+        cards.forEach((card) => {
+          const orderElement = card.querySelector(".syntax-card__order");
+          const orderLabel = orderElement?.querySelector("strong")?.textContent || "";
+          const orderText = orderElement ? orderElement.textContent.slice(orderLabel.length) : "";
+          const copyButton = card.querySelector(".syntax-card__footer button");
+
+          if (!orderText || !copyButton) {
+            return;
+          }
+
+          copyButton.disabled = false;
+          copyButton.addEventListener("click", () => runCopyAction(copyButton, orderText));
+        });
+      }
+
+      // b07：輸入時直接同步問候文字，不需要送出。
+      function setupLiveSubstitutionDemo() {
+        const input = document.querySelector("#b07-demo-input");
+        const output = document.querySelector("#b07-demo-output");
+        input.addEventListener("input", () => {
+          output.textContent = `你好，${input.value}`;
+        });
+      }
+
+      // b08：只複製樣品區的示範文字，與卡底下單句按鈕分流。
+      function setupCopyButtonDemo() {
+        const demoText = document.querySelector("#b08-demo-text");
+        const demoButton = document.querySelector("#b08-demo-copy");
+        demoButton.addEventListener("click", () => runCopyAction(demoButton, demoText.textContent));
+      }
+
+      // b09：採完全相同比對，大小寫與前後空白都不忽略；只顯示示範訊息。
+      function setupTypeToConfirmDemo() {
+        const target = document.querySelector("#b09-demo-target").textContent;
+        const input = document.querySelector("#b09-demo-input");
+        const actionButton = document.querySelector("#b09-demo-action");
+        const status = document.querySelector("#b09-demo-status");
+
+        input.addEventListener("input", () => {
+          actionButton.disabled = input.value !== target;
+          status.textContent = "";
+        });
+
+        actionButton.addEventListener("click", () => {
+          status.textContent = "示範完成，沒有執行真實刪除";
+        });
+      }
+
+      // b12：此勾選框只控制樣品內容顯示，不參與第 3 段組單狀態。
+      function setupCheckboxToggleDemo() {
+        const checkbox = document.querySelector("#b12-demo-toggle");
+        const nextContent = document.querySelector("#b12-demo-next");
+        checkbox.addEventListener("change", () => {
+          nextContent.hidden = !checkbox.checked;
+        });
+      }
+
+      setupOrderCopyButtons();
+      setupLiveSubstitutionDemo();
+      setupCopyButtonDemo();
+      setupTypeToConfirmDemo();
+      setupCheckboxToggleDemo();
+    })();
+  </script>
 </body>
 </html>
