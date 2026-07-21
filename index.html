@@ -1,0 +1,632 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>語法零件樣品板</title>
+  <style>
+    /* 第 1 段只建立黑白格局；配色、圓角與陰影留到第 6 段。 */
+    :root {
+      font-size: 20px;
+      color-scheme: light;
+      --page-bg: #f2f2f2;
+      --surface: #ffffff;
+      --text: #111111;
+      --muted: #555555;
+      --line: #777777;
+      --soft-line: #c8c8c8;
+      --disabled: #e5e5e5;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 6rem;
+    }
+
+    body {
+      margin: 0;
+      padding-bottom: 6.5rem;
+      background: var(--page-bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, "Segoe UI", "Noto Sans TC", sans-serif;
+      font-size: 1rem;
+      line-height: 1.8;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button,
+    input[type="text"] {
+      min-height: 48px;
+    }
+
+    button {
+      border: 2px solid var(--line);
+      padding: 0.45rem 0.8rem;
+      background: var(--surface);
+      color: var(--text);
+    }
+
+    button:disabled,
+    input:disabled {
+      cursor: not-allowed;
+      background: var(--disabled);
+      color: var(--muted);
+      opacity: 1;
+    }
+
+    .page-header,
+    main {
+      width: min(72rem, calc(100% - 2rem));
+      margin-inline: auto;
+    }
+
+    .page-header {
+      padding-block: 2.5rem 1.5rem;
+    }
+
+    .page-header h1 {
+      margin: 0;
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      line-height: 1.25;
+    }
+
+    .page-header p {
+      max-width: 46rem;
+      margin: 0.65rem 0 0;
+      color: var(--muted);
+      font-size: 1.05rem;
+    }
+
+    .anchor-bar {
+      position: sticky;
+      z-index: 10;
+      top: 0;
+      border-block: 2px solid var(--line);
+      background: var(--surface);
+    }
+
+    .anchor-bar__inner {
+      display: flex;
+      width: min(72rem, calc(100% - 2rem));
+      margin-inline: auto;
+      gap: 0.5rem;
+      overflow-x: auto;
+      padding-block: 0.5rem;
+    }
+
+    .anchor-bar a {
+      flex: 1 0 max-content;
+      min-height: 48px;
+      border: 2px solid var(--line);
+      padding: 0.35rem 0.8rem;
+      color: var(--text);
+      text-align: center;
+      text-decoration: none;
+    }
+
+    main {
+      padding-block: 1.5rem 2rem;
+    }
+
+    .card-section + .card-section {
+      margin-top: 2.5rem;
+    }
+
+    .section-heading {
+      margin: 0 0 1rem;
+      border-bottom: 3px solid var(--text);
+      padding-bottom: 0.35rem;
+      font-size: clamp(1.35rem, 3vw, 1.8rem);
+      line-height: 1.35;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .syntax-card {
+      display: flex;
+      min-width: 0;
+      flex-direction: column;
+      border: 2px solid var(--line);
+      background: var(--surface);
+    }
+
+    .syntax-card__body {
+      display: grid;
+      flex: 1;
+      gap: 0.8rem;
+      padding: 1rem;
+    }
+
+    .syntax-card h3 {
+      overflow-wrap: anywhere;
+      margin: 0;
+      font-size: clamp(1.1rem, 2.2vw, 1.35rem);
+      line-height: 1.4;
+    }
+
+    .syntax-card__plain {
+      margin: 0;
+    }
+
+    .syntax-card__order {
+      margin: 0;
+    }
+
+    .sample-box {
+      min-height: 5.25rem;
+      border: 2px dashed var(--soft-line);
+      padding: 0.75rem;
+      background: #fafafa;
+      color: var(--muted);
+    }
+
+    .sample-box code {
+      padding: 0.1rem 0.25rem;
+      background: var(--disabled);
+      color: var(--text);
+      font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+      font-size: 0.9rem;
+      overflow-wrap: anywhere;
+    }
+
+    .sample-row,
+    .mini-columns,
+    .mini-sizes,
+    .mini-toggle {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .mini-block {
+      min-width: 3.5rem;
+      border: 2px solid var(--line);
+      padding: 0.25rem 0.5rem;
+      background: var(--surface);
+      text-align: center;
+    }
+
+    .mini-columns .mini-block {
+      flex: 1 1 5rem;
+    }
+
+    .mini-sizes span:nth-child(1) {
+      font-size: 0.8rem;
+    }
+
+    .mini-sizes span:nth-child(2) {
+      font-size: 1rem;
+    }
+
+    .mini-sizes span:nth-child(3) {
+      font-size: 1.2rem;
+    }
+
+    .mini-phone {
+      width: 4rem;
+      border: 2px solid var(--line);
+      padding: 0.3rem;
+      text-align: center;
+    }
+
+    .mini-card {
+      border: 2px solid var(--line);
+      padding: 0.5rem;
+      background: var(--surface);
+    }
+
+    .mini-input {
+      width: min(100%, 13rem);
+      border: 2px solid var(--line);
+      padding-inline: 0.5rem;
+    }
+
+    .mini-list {
+      margin: 0;
+      padding-left: 1.5rem;
+    }
+
+    .syntax-card__footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      border-top: 2px solid var(--line);
+      padding: 0.75rem 1rem;
+      flex-wrap: wrap;
+    }
+
+    .select-control {
+      display: inline-flex;
+      min-height: 48px;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .select-control input {
+      width: 1.35rem;
+      height: 1.35rem;
+    }
+
+    .mine-toolbar {
+      display: flex;
+      gap: 0.65rem;
+      flex-wrap: wrap;
+      border: 2px solid var(--line);
+      padding: 1rem;
+      background: var(--surface);
+    }
+
+    .mine-form[hidden],
+    .order-preview[hidden] {
+      display: none;
+    }
+
+    .order-bar {
+      position: fixed;
+      z-index: 20;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      border-top: 3px solid var(--text);
+      background: var(--surface);
+    }
+
+    .order-bar__inner,
+    .order-preview {
+      width: min(72rem, calc(100% - 2rem));
+      margin-inline: auto;
+    }
+
+    .order-bar__inner {
+      display: flex;
+      min-height: 5rem;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding-block: 0.55rem;
+    }
+
+    .order-count {
+      margin: 0;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .order-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    @media (max-width: 46rem) {
+      body {
+        padding-bottom: 9rem;
+      }
+
+      .page-header,
+      main,
+      .anchor-bar__inner,
+      .order-bar__inner,
+      .order-preview {
+        width: min(100% - 1rem, 72rem);
+      }
+
+      .page-header {
+        padding-block: 1.5rem 1rem;
+      }
+
+      .card-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .syntax-card__footer,
+      .order-bar__inner {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .syntax-card__footer button,
+      .order-actions button {
+        flex: 1;
+      }
+
+      .order-actions {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="page-header">
+    <h1>語法零件樣品板</h1>
+    <p>一張共同零件名錄＋可組單的樣品板。</p>
+  </header>
+
+  <nav class="anchor-bar" aria-label="卡片區導覽">
+    <div class="anchor-bar__inner">
+      <a href="#look">外觀排版</a>
+      <a href="#act">互動功能</a>
+      <a href="#data">資料記憶</a>
+      <a href="#mine">自加卡區</a>
+    </div>
+  </nav>
+
+  <main>
+    <section class="card-section" id="look" aria-labelledby="look-title">
+      <h2 class="section-heading" id="look-title">外觀排版</h2>
+      <div class="card-grid">
+        <article class="syntax-card" id="b01">
+          <div class="syntax-card__body">
+            <h3>CSS variables(CSS 變數)</h3>
+            <p class="syntax-card__plain">顏色、陰影集中 :root 一處,改一行整份換色</p>
+            <p class="syntax-card__order"><strong>下單例句：</strong>顏色用 CSS 變數集中管理</p>
+            <div class="sample-box" aria-label="CSS 變數靜態示意">
+              <code>:root { --主色: 灰色; }</code>
+            </div>
+          </div>
+          <footer class="syntax-card__footer">
+            <label class="select-control"><input type="checkbox" disabled>選入組單</label>
+            <button type="button" disabled>複製下單句</button>
+          </footer>
+        </article>
+
+        <article class="syntax-card" id="b02">
+          <div class="syntax-card__body">
+            <h3>rem+clamp()(相對字級+自動伸縮)</h3>
+            <p class="syntax-card__plain">基準 20px 大字,隨螢幕縮放不破版</p>
+            <p class="syntax-card__order"><strong>下單例句：</strong>字級 rem+clamp,基準 20px</p>
+            <div class="sample-box mini-sizes" aria-label="相對字級靜態示意">
+              <span>小</span><span>適中</span><span>大</span>
+            </div>
+          </div>
+          <footer class="syntax-card__footer">
+            <label class="select-control"><input type="checkbox" disabled>選入組單</label>
+            <button type="button" disabled>複製下單句</button>
+          </footer>
+        </article>
+
+        <article class="syntax-card" id="b03">
+          <div class="syntax-card__body">
+            <h3>grid/flexbox(格線/彈性排版)</h3>
+            <p class="syntax-card__plain">卡片並排、欄位對齊全靠這兩套</p>
+            <p class="syntax-card__order"><strong>下單例句：</strong>這區用 grid 排兩欄</p>
+            <div class="sample-box mini-columns" aria-label="格線排版靜態示意">
+              <span class="mini-block">左欄</span><span class="mini-block">右欄</span>
+            </div>
+          </div>
+          <footer class="syntax-card__footer">
+            <label class="select-control"><input type="checkbox" disabled>選入組單</label>
+            <button type="button" disabled>複製下單句</button>
+          </footer>
+        </article>
+
+        <article class="syntax-card" id="b04">
+          <div class="syntax-card__body">
+            <h3>position: sticky(捲動吸頂)</h3>
+            <p class="syntax-card__plain">上方工作列捲到哪跟到哪</p>
+            <p class="syntax-card__order"><strong>下單例句：</strong>導覽列做 sticky 吸頂</p>
+            <div class="sample-box" aria-label="捲動吸頂靜態示意">
+              <div class="mini-block">固定在上方的工作列</div>
+            </div>
+          </div>
+          <footer class="syntax-card__footer">
+            <label class="select-control"><input type="checkbox" disabled>選入組單</label>
+            <button type="button" disabled>複製下單句</button>
+          </footer>
+        </article>
+
+        <article class="syntax-card" id="b05">
+          <div class="syntax-card__body">
+            <h3>@media(響應式斷點)</h3>
+            <p class="syntax-card__plain">手機、電腦各自一套排版規則</p>
+            <p class="syntax-card__order"><strong>下單例句：</strong>加手機版 @media</p>
+            <div class="sample-box sample-row" aria-label="響應式斷點靜態示意">
+              <span class="mini-phone">手機<br>單欄</span>
+              <span class="mini-block">電腦：兩欄</span>
+            </div>
+          </div>
+          <footer class="syntax-card__footer">
+            <label class="select-control"><input type="checkbox" disabled>選入組單</label>
+            <button type="button" disabled>複製下單句</button>
+          </footer>
+        </article>
+
+        <article class="syntax-card" id="b06">
+          <div class="syntax-card__body">
+            <h3>卡片風(圓角+陰影)</h3>
+            <p class="syntax-card__plain">白卡、圓角、陰影、漸層表頭的視覺語言</p>
+            <p class="syntax-card__order"><strong>下單例句：</strong>照 K-005 卡片風</p>
+            <div class="sample-box" aria-label="卡片風靜態示意">
+              <div class="mini-card">卡片內容示意</div>
+            </div>
+          </div>
+          <footer class="syntax-card__footer">
+            <label class="select-control"><input type="checkbox" disabled>選入組單</label>
+            <button type="button" disabled>複製下單句</button>
+          </footer>
+        </article>
+      </div>
+    </section>
+
+    <section class="card-section" id="act" aria-labelledby="act-title">
+      <h2 class="section-heading" id="act-title">互動功能</h2>
+      <div class="card-grid">
+        <article class="syntax-card" id="b07">
+          <div class="syntax-card__body">
+            <h3>即時代入(輸入同步)</h3>
+            <p class="syntax-card__plain">名字填一次,整份指令自動換</p>
+            <p class="syntax-card__order"><strong>下單例句：</strong>填一次,全文指令同步代入</p>
+            <div class="sample-box" aria-label="即時代入靜態示意">
+              <div class="sample-row">
+                <input class="mini-input" type="text" value="王小明" aria-label="姓名示意" disabled>
+                <span>你好，王小明</span>
+              </div>
+            </div>
+          </div>
+          <footer class="syntax-card__footer">
+            <label class="select-control"><input type="checkbox" disabled>選入組單</label>
+            <button type="button" disabled>複製下單句</button>
+          </footer>
+        </article>
+
+        <article class="syntax-card" id="b08">
+          <div class="syntax-card__body">
+            <h3>copy button(一鍵複製)</h3>
+            <p class="syntax-card__plain">按完顯「已複製」,舊瀏覽器走備援</p>
+            <p class="syntax-card__order"><strong>下單例句：</strong>每條指令加一鍵複製含備援</p>
+            <div class="sample-box" aria-label="一鍵複製靜態示意">
+              <button type="button" disabled>複製</button>
+            </div>
+          </div>
+          <footer class="syntax-card__footer">
+            <label class="select-control"><input type="checkbox" disabled>選入組單</label>
+            <button type="button" disabled>複製下單句</button>
+          </footer>
+        </article>
+
+        <article class="syntax-card" id="b09">
+          <div class="syntax-card__body">
+            <h3>type-to-confirm(打字確認連鎖)</h3>
+            <p class="syntax-card__plain">名字打對,危險按鈕才解鎖</p>
+            <p class="syntax-card__order"><strong>下單例句：</strong>危險操作加打字確認連鎖</p>
+            <div class="sample-box" aria-label="打字確認連鎖靜態示意">
+              <div class="sample-row">
+                <input class="mini-input" type="text" value="請輸入名稱" aria-label="確認名稱示意" disabled>
+                <button type="button" disabled>執行</button>
+              </div>
+            </div>
+          </div>
+          <footer class="syntax-card__footer">
+            <label class="select-control"><input type="checkbox" disabled>選入組單</label>
+            <button type="button" disabled>複製下單句</button>
+          </footer>
+        </article>
+
+        <article class="syntax-card" id="b10">
+          <div class="syntax-card__body">
+            <h3>scrollIntoView(目錄跳轉+高亮)</h3>
+            <p class="syntax-card__plain">點目錄平滑捲到該段,當前段亮起</p>
+            <p class="syntax-card__order"><strong>下單例句：</strong>加目錄跳轉+段落高亮</p>
+            <div class="sample-box" aria-label="目錄跳轉靜態示意">
+              <ol class="mini-list"><li>第一段</li><li>第二段</li></ol>
+            </div>
+          </div>
+          <footer class="syntax-card__footer">
+            <label class="select-control"><input type="checkbox" disabled>選入組單</label>
+            <button type="button" disabled>複製下單句</button>
+          </footer>
+        </article>
+
+        <article class="syntax-card" id="b11">
+          <div class="syntax-card__body">
+            <h3>details/summary(原生摺疊面板)</h3>
+            <p class="syntax-card__plain">點標題就展開收合,免寫程式</p>
+            <p class="syntax-card__order"><strong>下單例句：</strong>這章用 details 摺疊</p>
+            <div class="sample-box" aria-label="摺疊面板靜態示意">
+              <div class="mini-block">▶ 摺疊面板標題</div>
+            </div>
+          </div>
+          <footer class="syntax-card__footer">
+            <label class="select-control"><input type="checkbox" disabled>選入組單</label>
+            <button type="button" disabled>複製下單句</button>
+          </footer>
+        </article>
+
+        <article class="syntax-card" id="b12">
+          <div class="syntax-card__body">
+            <h3>checkbox+toggle(勾選切換)</h3>
+            <p class="syntax-card__plain">勾選框帶動顯示/隱藏</p>
+            <p class="syntax-card__order"><strong>下單例句：</strong>勾了才顯示下一步</p>
+            <div class="sample-box" aria-label="勾選切換靜態示意">
+              <div class="mini-toggle">
+                <input type="checkbox" aria-label="勾選切換示意" disabled>
+                <span>勾了才顯示下一步</span>
+              </div>
+            </div>
+          </div>
+          <footer class="syntax-card__footer">
+            <label class="select-control"><input type="checkbox" disabled>選入組單</label>
+            <button type="button" disabled>複製下單句</button>
+          </footer>
+        </article>
+      </div>
+    </section>
+
+    <section class="card-section" id="data" aria-labelledby="data-title">
+      <h2 class="section-heading" id="data-title">資料記憶</h2>
+      <div class="card-grid">
+        <article class="syntax-card" id="b13">
+          <div class="syntax-card__body">
+            <h3>localStorage(瀏覽器本機記憶)</h3>
+            <p class="syntax-card__plain">填過的東西關掉重開還在</p>
+            <p class="syntax-card__order"><strong>下單例句：</strong>輸入欄用 localStorage 記住</p>
+            <div class="sample-box" aria-label="瀏覽器本機記憶靜態示意">
+              <code>名稱 → 儲存在這台裝置</code>
+            </div>
+          </div>
+          <footer class="syntax-card__footer">
+            <label class="select-control"><input type="checkbox" disabled>選入組單</label>
+            <button type="button" disabled>複製下單句</button>
+          </footer>
+        </article>
+
+        <article class="syntax-card" id="b14">
+          <div class="syntax-card__body">
+            <h3>base64 內嵌圖</h3>
+            <p class="syntax-card__plain">截圖打包進單檔,免圖片資料夾</p>
+            <p class="syntax-card__order"><strong>下單例句：</strong>截圖 base64 內嵌,單檔攜帶</p>
+            <div class="sample-box" aria-label="內嵌圖靜態示意">
+              <code>data:image/…;base64,…</code>
+            </div>
+          </div>
+          <footer class="syntax-card__footer">
+            <label class="select-control"><input type="checkbox" disabled>選入組單</label>
+            <button type="button" disabled>複製下單句</button>
+          </footer>
+        </article>
+      </div>
+    </section>
+
+    <section class="card-section" id="mine" aria-labelledby="mine-title">
+      <h2 class="section-heading" id="mine-title">自加卡區</h2>
+      <div class="mine-toolbar" aria-label="自加卡工具列">
+        <button type="button" disabled>＋新增卡片</button>
+        <button type="button" disabled>匯出 JSON</button>
+        <button type="button" disabled>匯入 JSON</button>
+      </div>
+      <!-- 第 4 段才顯示並啟用新增表單。 -->
+      <form class="mine-form" hidden>
+        <input type="text" name="term" aria-label="術語" disabled>
+        <input type="text" name="plain" aria-label="白話" disabled>
+        <input type="text" name="order" aria-label="下單句" disabled>
+      </form>
+      <div class="card-grid" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <aside class="order-bar" aria-label="組單列">
+    <!-- 第 3 段才產生並顯示組單預覽。 -->
+    <div class="order-preview" hidden></div>
+    <div class="order-bar__inner">
+      <p class="order-count">已選 0 張</p>
+      <div class="order-actions">
+        <button type="button" disabled>複製組單</button>
+        <button type="button" disabled>清空</button>
+      </div>
+    </div>
+  </aside>
+</body>
+</html>
