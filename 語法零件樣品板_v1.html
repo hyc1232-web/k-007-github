@@ -5,17 +5,48 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>語法零件樣品板</title>
   <style>
-    /* 第 1 段只建立黑白格局；配色、圓角與陰影留到第 6 段。 */
+    /* 第 6 段完成版：主要色彩、圓角、陰影與焦點樣式集中管理。 */
     :root {
       font-size: 20px;
       color-scheme: light;
-      --page-bg: #f2f2f2;
-      --surface: #ffffff;
-      --text: #111111;
-      --muted: #555555;
-      --line: #777777;
-      --soft-line: #c8c8c8;
-      --disabled: #e5e5e5;
+      --color-primary: #245a8d;
+      --color-primary-dark: #183f66;
+      --color-primary-soft: #eaf3fb;
+      --color-page: #eef2f6;
+      --color-surface: #ffffff;
+      --color-surface-soft: #f7f9fb;
+      --color-text: #16202a;
+      --color-muted: #52606d;
+      --color-border: #c6d0da;
+      --color-border-strong: #8193a5;
+      --color-success: #25734a;
+      --color-success-soft: #e9f6ef;
+      --color-warning: #986400;
+      --color-warning-soft: #fff4d8;
+      --color-danger: #b42318;
+      --color-danger-dark: #8f1d15;
+      --color-danger-soft: #fdecea;
+      --color-disabled: #e2e7ec;
+      --color-disabled-text: #52606d;
+      --color-mine: #1f766e;
+      --color-mine-soft: #e7f5f3;
+      --radius-small: 8px;
+      --radius-medium: 12px;
+      --radius-large: 16px;
+      --shadow-small: 0 2px 6px rgba(20, 40, 60, 0.10);
+      --shadow-card: 0 6px 18px rgba(20, 40, 60, 0.12);
+      --shadow-card-hover: 0 9px 24px rgba(20, 40, 60, 0.16);
+      --shadow-fixed: 0 -5px 18px rgba(20, 40, 60, 0.14);
+      --focus-ring: 0 0 0 4px rgba(36, 90, 141, 0.25);
+
+      /* 保留既有格局規則使用的語意別名。 */
+      --page-bg: var(--color-page);
+      --surface: var(--color-surface);
+      --text: var(--color-text);
+      --muted: var(--color-muted);
+      --line: var(--color-border-strong);
+      --soft-line: var(--color-border);
+      --disabled: var(--color-disabled);
     }
 
     * {
@@ -326,6 +357,58 @@
       background: var(--surface);
     }
 
+    .mine-form {
+      display: grid;
+      gap: 0.8rem;
+      margin-top: 1rem;
+      border: 2px solid var(--line);
+      padding: 1rem;
+      background: var(--surface);
+    }
+
+    .mine-form label {
+      display: grid;
+      gap: 0.25rem;
+      font-weight: 700;
+    }
+
+    .mine-form input[type="text"] {
+      width: 100%;
+      min-width: 0;
+      border: 2px solid var(--line);
+      padding-inline: 0.5rem;
+    }
+
+    .mine-status-area {
+      min-height: 2.2rem;
+      margin-top: 0.75rem;
+      overflow-wrap: anywhere;
+    }
+
+    .mine-status-area p {
+      margin: 0;
+      font-weight: 700;
+    }
+
+    .mine-status-area p[hidden],
+    .json-file-input[hidden] {
+      display: none;
+    }
+
+    .mine-card-grid {
+      margin-top: 1rem;
+    }
+
+    .mine-card::before {
+      content: "自加";
+    }
+
+    .mine-card__actions {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
     .mine-form[hidden],
     .order-preview[hidden] {
       display: none;
@@ -345,6 +428,18 @@
     .order-preview {
       width: min(72rem, calc(100% - 2rem));
       margin-inline: auto;
+    }
+
+    .order-preview {
+      max-height: 40vh;
+      overflow-x: hidden;
+      overflow-y: auto;
+      border-bottom: 2px solid var(--line);
+      padding: 0.75rem;
+      background: var(--surface);
+      color: var(--text);
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
     }
 
     .order-bar__inner {
@@ -399,14 +494,479 @@
         flex: 1;
       }
 
+      .mine-card__actions {
+        width: 100%;
+      }
+
+      .mine-card__actions button {
+        flex: 1 1 100%;
+      }
+
       .order-actions {
         width: 100%;
+      }
+    }
+
+    /* 第 6 段完成版視覺：不變更既有格局、斷點與互動。 */
+    body {
+      background: var(--color-page);
+      color: var(--color-text);
+    }
+
+    .page-header {
+      position: relative;
+      margin-top: 1rem;
+      border: 1px solid var(--color-primary-dark);
+      border-radius: var(--radius-large);
+      padding: 2rem;
+      background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+      box-shadow: var(--shadow-card);
+      color: var(--color-surface);
+    }
+
+    .page-header h1 {
+      max-width: calc(100% - 17rem);
+      color: var(--color-surface);
+      text-wrap: balance;
+    }
+
+    .page-header p {
+      color: var(--color-primary-soft);
+    }
+
+    .page-header .version-badge {
+      position: absolute;
+      inset: 1rem 1rem auto auto;
+      max-width: none;
+      margin: 0;
+      border: 1px solid rgba(255, 255, 255, 0.55);
+      border-radius: var(--radius-small);
+      padding: 0.25rem 0.6rem;
+      background: rgba(255, 255, 255, 0.14);
+      color: var(--color-surface);
+      font-size: clamp(0.8rem, 1.2vw, 0.9rem);
+      font-weight: 700;
+      line-height: 1.4;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+    }
+
+    .anchor-bar {
+      margin-top: 1rem;
+      border-block: 1px solid var(--color-border);
+      background: var(--color-surface);
+      box-shadow: var(--shadow-small);
+    }
+
+    .anchor-bar__inner {
+      scrollbar-color: var(--color-border-strong) var(--color-primary-soft);
+      scrollbar-width: thin;
+    }
+
+    .anchor-bar a {
+      border: 2px solid var(--color-border-strong);
+      border-radius: var(--radius-medium);
+      background: var(--color-surface);
+      color: var(--color-primary-dark);
+      font-weight: 700;
+      transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease;
+    }
+
+    .anchor-bar a:active {
+      border-color: var(--color-primary);
+      background: var(--color-primary);
+      color: var(--color-surface);
+    }
+
+    main {
+      padding-block: 2rem 2.5rem;
+    }
+
+    .card-section + .card-section {
+      margin-top: 3rem;
+    }
+
+    .section-heading {
+      border-bottom: 2px solid var(--color-border-strong);
+      border-left: 0.3rem solid var(--color-primary);
+      padding: 0.25rem 0 0.45rem 0.75rem;
+      color: var(--color-primary-dark);
+    }
+
+    .card-grid {
+      gap: 1.25rem;
+    }
+
+    .syntax-card {
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-large);
+      background: var(--color-surface);
+      box-shadow: var(--shadow-card);
+      transition: border-color 160ms ease, box-shadow 160ms ease;
+    }
+
+    .syntax-card::before {
+      border: 1px solid var(--color-primary);
+      border-radius: var(--radius-small);
+      background: var(--color-primary-soft);
+      box-shadow: var(--shadow-small);
+      color: var(--color-primary-dark);
+    }
+
+    .syntax-card__body {
+      gap: 0.9rem;
+      padding: 1.1rem;
+    }
+
+    .syntax-card h3 {
+      color: var(--color-primary-dark);
+      font-weight: 700;
+    }
+
+    .syntax-card__plain {
+      color: var(--color-text);
+      font-size: 1rem;
+    }
+
+    .syntax-card__order {
+      border-left: 0.25rem solid var(--color-primary);
+      border-radius: var(--radius-small);
+      padding: 0.55rem 0.7rem;
+      background: var(--color-primary-soft);
+      color: var(--color-text);
+      line-height: 1.7;
+      overflow-wrap: anywhere;
+    }
+
+    .syntax-card__order strong {
+      color: var(--color-primary-dark);
+    }
+
+    .sample-box {
+      border: 2px dashed var(--color-border-strong);
+      border-radius: var(--radius-medium);
+      background: var(--color-surface-soft);
+      color: var(--color-muted);
+    }
+
+    .sample-box code {
+      display: inline-block;
+      max-width: 100%;
+      border-radius: var(--radius-small);
+      background: var(--color-disabled);
+      color: var(--color-text);
+    }
+
+    .sample-box details {
+      color: var(--color-text);
+    }
+
+    .sample-box summary {
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-small);
+      padding-inline: 0.65rem;
+      background: var(--color-surface);
+      color: var(--color-primary-dark);
+    }
+
+    .sample-box details[open] summary {
+      border-color: var(--color-primary);
+      background: var(--color-primary-soft);
+    }
+
+    .mini-block,
+    .mini-phone,
+    .mini-card {
+      border-color: var(--color-border-strong);
+      border-radius: var(--radius-small);
+      background: var(--color-surface);
+    }
+
+    button {
+      cursor: pointer;
+      border: 2px solid var(--color-border-strong);
+      border-radius: var(--radius-medium);
+      background: var(--color-surface);
+      color: var(--color-primary-dark);
+      font-weight: 700;
+      line-height: 1.4;
+      transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease, box-shadow 160ms ease;
+    }
+
+    #save-mine-card,
+    #copy-order-list {
+      border-color: var(--color-primary);
+      background: var(--color-primary);
+      color: var(--color-surface);
+    }
+
+    #b09-demo-action:not(:disabled),
+    .delete-mine-card {
+      border-color: var(--color-danger);
+      background: var(--color-surface);
+      color: var(--color-danger);
+    }
+
+    .delete-mine-card.is-confirming {
+      border-color: var(--color-danger-dark);
+      background: var(--color-danger);
+      color: var(--color-surface);
+    }
+
+    button:disabled,
+    #copy-order-list:disabled,
+    #save-mine-card:disabled,
+    #b09-demo-action:disabled,
+    .delete-mine-card:disabled,
+    input:disabled {
+      cursor: not-allowed;
+      border-color: var(--color-border);
+      background: var(--color-disabled);
+      color: var(--color-disabled-text);
+      box-shadow: none;
+      opacity: 1;
+    }
+
+    input[type="text"] {
+      min-width: 0;
+      border: 2px solid var(--color-border-strong);
+      border-radius: var(--radius-medium);
+      padding-inline: 0.7rem;
+      background: var(--color-surface);
+      color: var(--color-text);
+    }
+
+    input[type="checkbox"] {
+      accent-color: var(--color-primary);
+    }
+
+    .mini-input,
+    .mine-form input[type="text"] {
+      border-color: var(--color-border-strong);
+    }
+
+    .demo-output,
+    .demo-status {
+      color: var(--color-text);
+    }
+
+    .syntax-card__footer {
+      border-top: 1px solid var(--color-border);
+      border-radius: 0 0 var(--radius-large) var(--radius-large);
+      background: var(--color-surface-soft);
+    }
+
+    .select-control {
+      border-radius: var(--radius-small);
+      color: var(--color-text);
+      font-weight: 700;
+    }
+
+    .mine-toolbar {
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-large);
+      background: var(--color-surface);
+      box-shadow: var(--shadow-small);
+    }
+
+    .mine-form {
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-large);
+      background: var(--color-surface);
+      box-shadow: var(--shadow-card);
+    }
+
+    .mine-form label {
+      color: var(--color-primary-dark);
+    }
+
+    .mine-status-area {
+      min-height: 0;
+      margin-top: 0;
+    }
+
+    .mine-status-area p:not([hidden]) {
+      margin-top: 0.75rem;
+      border: 1px solid var(--color-success);
+      border-radius: var(--radius-medium);
+      padding: 0.65rem 0.8rem;
+      background: var(--color-success-soft);
+      color: var(--color-success);
+      overflow-wrap: anywhere;
+    }
+
+    .mine-status-area p.is-warning:not([hidden]) {
+      border-color: var(--color-warning);
+      background: var(--color-warning-soft);
+      color: var(--color-warning);
+    }
+
+    #mine-error:not([hidden]) {
+      border-color: var(--color-danger);
+      background: var(--color-danger-soft);
+      color: var(--color-danger-dark);
+    }
+
+    .mine-card {
+      border-color: var(--color-mine);
+    }
+
+    .mine-card::before {
+      border-color: var(--color-mine);
+      background: var(--color-mine-soft);
+      color: var(--color-mine);
+    }
+
+    .mine-card .syntax-card__order {
+      border-left-color: var(--color-mine);
+      background: var(--color-mine-soft);
+    }
+
+    .mine-card__actions button {
+      min-width: 7rem;
+    }
+
+    .order-bar {
+      border-top: 3px solid var(--color-primary);
+      background: var(--color-surface);
+      box-shadow: var(--shadow-fixed);
+    }
+
+    .order-preview {
+      border: 1px solid var(--color-border);
+      border-bottom: 2px solid var(--color-primary);
+      border-radius: var(--radius-medium) var(--radius-medium) 0 0;
+      background: var(--color-surface-soft);
+      color: var(--color-text);
+      font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+      line-height: 1.6;
+      scrollbar-color: var(--color-border-strong) var(--color-primary-soft);
+      scrollbar-width: thin;
+    }
+
+    .order-count {
+      color: var(--color-primary-dark);
+      font-size: 1.05rem;
+    }
+
+    .anchor-bar a:focus-visible,
+    button:focus-visible,
+    input:focus-visible,
+    summary:focus-visible,
+    .select-control:focus-within {
+      outline: 3px solid var(--color-surface);
+      box-shadow: var(--focus-ring);
+    }
+
+    input[type="text"]:focus-visible {
+      border-color: var(--color-primary);
+    }
+
+    @media (hover: hover) {
+      .anchor-bar a:hover,
+      button:hover:not(:disabled) {
+        border-color: var(--color-primary);
+        background: var(--color-primary-soft);
+        color: var(--color-primary-dark);
+      }
+
+      #save-mine-card:hover:not(:disabled),
+      #copy-order-list:hover:not(:disabled) {
+        border-color: var(--color-primary-dark);
+        background: var(--color-primary-dark);
+        color: var(--color-surface);
+      }
+
+      #b09-demo-action:hover:not(:disabled),
+      .delete-mine-card:hover:not(:disabled) {
+        border-color: var(--color-danger-dark);
+        background: var(--color-danger-soft);
+        color: var(--color-danger-dark);
+      }
+
+      .delete-mine-card.is-confirming:hover:not(:disabled) {
+        background: var(--color-danger-dark);
+        color: var(--color-surface);
+      }
+
+      .syntax-card:hover {
+        border-color: var(--color-border-strong);
+        box-shadow: var(--shadow-card-hover);
+      }
+
+      .mine-card:hover {
+        border-color: var(--color-mine);
+      }
+    }
+
+    @media (max-width: 46rem) {
+      .page-header {
+        margin-top: 0.5rem;
+        border-radius: var(--radius-medium);
+        padding: 1.35rem 1rem;
+      }
+
+      .page-header h1 {
+        max-width: none;
+      }
+
+      .page-header .version-badge {
+        position: static;
+        width: max-content;
+        max-width: 100%;
+        margin: 0 0 0.55rem auto;
+        text-align: right;
+        white-space: normal;
+        overflow-wrap: anywhere;
+      }
+
+      .anchor-bar {
+        margin-top: 0.5rem;
+      }
+
+      main {
+        padding-block: 1.5rem 2rem;
+      }
+
+      .card-section + .card-section {
+        margin-top: 2.5rem;
+      }
+
+      .syntax-card__body {
+        padding: 1rem;
+      }
+
+      .mine-toolbar button {
+        flex: 1 1 100%;
+      }
+
+      .mine-card__actions button {
+        width: 100%;
+        min-width: 0;
+      }
+
+      .order-preview {
+        font-size: 0.9rem;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
       }
     }
   </style>
 </head>
 <body>
   <header class="page-header">
+    <p class="version-badge" aria-label="目前版本">V1-5｜第一版・第5次更新</p>
     <h1>語法零件樣品板</h1>
     <p>一張共同零件名錄＋可組單的樣品板。</p>
   </header>
@@ -665,28 +1225,38 @@
     <section class="card-section" id="mine" aria-labelledby="mine-title">
       <h2 class="section-heading" id="mine-title">自加卡區</h2>
       <div class="mine-toolbar" aria-label="自加卡工具列">
-        <button type="button" disabled>＋新增卡片</button>
-        <button type="button" disabled>匯出 JSON</button>
-        <button type="button" disabled>匯入 JSON</button>
+        <button id="toggle-mine-form" type="button" aria-expanded="false" aria-controls="mine-form">＋新增卡片</button>
+        <button id="export-mine-json" type="button">匯出 JSON</button>
+        <button id="import-mine-json" type="button">匯入 JSON</button>
+        <input class="json-file-input" id="mine-json-file" type="file" accept=".json,application/json" hidden>
       </div>
-      <!-- 第 4 段才顯示並啟用新增表單。 -->
-      <form class="mine-form" hidden>
-        <input type="text" name="term" aria-label="術語" disabled>
-        <input type="text" name="plain" aria-label="白話" disabled>
-        <input type="text" name="order" aria-label="下單句" disabled>
+      <form class="mine-form" id="mine-form" hidden novalidate>
+        <label for="mine-term">術語
+          <input id="mine-term" type="text" name="term" autocomplete="off" required>
+        </label>
+        <label for="mine-plain">白話一句
+          <input id="mine-plain" type="text" name="plain" autocomplete="off" required>
+        </label>
+        <label for="mine-order">下單例句
+          <input id="mine-order" type="text" name="order" autocomplete="off" required>
+        </label>
+        <button id="save-mine-card" type="submit">儲存卡片</button>
       </form>
-      <div class="card-grid" aria-live="polite"></div>
+      <div class="mine-status-area" aria-label="自加卡操作狀態">
+        <p id="mine-status" role="status" aria-live="polite" hidden></p>
+        <p id="mine-error" role="alert" hidden></p>
+      </div>
+      <div class="card-grid mine-card-grid" id="mine-card-grid" aria-live="polite"></div>
     </section>
   </main>
 
   <aside class="order-bar" aria-label="組單列">
-    <!-- 第 3 段才產生並顯示組單預覽。 -->
-    <div class="order-preview" hidden></div>
+    <div class="order-preview" aria-live="polite" hidden></div>
     <div class="order-bar__inner">
-      <p class="order-count">已選 0 張</p>
+      <p class="order-count" aria-live="polite">已選 0 張</p>
       <div class="order-actions">
-        <button type="button" disabled>複製組單</button>
-        <button type="button" disabled>清空</button>
+        <button id="copy-order-list" type="button" disabled>複製組單</button>
+        <button id="clear-order-list" type="button" disabled>清空</button>
       </div>
     </div>
   </aside>
@@ -697,6 +1267,15 @@
 
       const COPY_SUCCESS_TEXT = "已複製";
       const COPY_FEEDBACK_MS = 1200;
+      const STORAGE_KEY = "syntax_board_mycards";
+      const STORAGE_VERSION = 1;
+      const CARD_FIELDS = ["id", "term", "plain", "order", "zone", "created"];
+
+      let myCards = [];
+      let selectedMineCardIds = new Set();
+      let pendingDeleteId = null;
+      let transactionInProgress = false;
+      let dataMutationsLocked = false;
 
       // 舊瀏覽器備援：建立暫時文字區，選取後呼叫 execCommand('copy')。
       function copyWithLegacyFallback(text) {
@@ -824,11 +1403,702 @@
         });
       }
 
+      class CardDataError extends Error {}
+
+      function isPlainObject(value) {
+        return value !== null && typeof value === "object" && !Array.isArray(value);
+      }
+
+      function isValidDateString(value) {
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+          return false;
+        }
+
+        const [year, month, day] = value.split("-").map(Number);
+        const checkedDate = new Date(Date.UTC(year, month - 1, day));
+        return checkedDate.getUTCFullYear() === year
+          && checkedDate.getUTCMonth() === month - 1
+          && checkedDate.getUTCDate() === day;
+      }
+
+      function normalizeCard(card, index, sourceName) {
+        const itemName = `${sourceName}第 ${index + 1} 張卡`;
+        if (!isPlainObject(card)) {
+          throw new CardDataError(`${itemName}必須是物件`);
+        }
+
+        const actualFields = Object.keys(card).sort();
+        const expectedFields = [...CARD_FIELDS].sort();
+        if (actualFields.length !== expectedFields.length
+          || actualFields.some((field, fieldIndex) => field !== expectedFields[fieldIndex])) {
+          throw new CardDataError(`${itemName}欄位必須且只能包含 id、term、plain、order、zone、created`);
+        }
+
+        if (typeof card.id !== "string" || card.id.trim() === "") {
+          throw new CardDataError(`${itemName}的 id 必須是非空字串`);
+        }
+        if (typeof card.term !== "string" || card.term.trim() === "") {
+          throw new CardDataError(`${itemName}的 term 必須是非空字串`);
+        }
+        if (typeof card.plain !== "string" || card.plain.trim() === "") {
+          throw new CardDataError(`${itemName}的 plain 必須是非空字串`);
+        }
+        if (typeof card.order !== "string" || card.order.trim() === "") {
+          throw new CardDataError(`${itemName}的 order 必須是非空字串`);
+        }
+        if (card.zone !== "mine") {
+          throw new CardDataError(`${itemName}的 zone 必須嚴格等於 mine`);
+        }
+        if (typeof card.created !== "string" || !isValidDateString(card.created)) {
+          throw new CardDataError(`${itemName}的 created 必須是有效的 YYYY-MM-DD 日期`);
+        }
+
+        return {
+          id: card.id.trim(),
+          term: card.term.trim(),
+          plain: card.plain.trim(),
+          order: card.order.trim(),
+          zone: "mine",
+          created: card.created
+        };
+      }
+
+      function validateCards(cards, sourceName, options = {}) {
+        if (!Array.isArray(cards)) {
+          throw new CardDataError(`${sourceName}的 cards 必須是陣列`);
+        }
+
+        const normalizedCards = cards.map((card, index) => normalizeCard(card, index, sourceName));
+        if (!options.allowDuplicateTerms) {
+          const terms = new Set();
+          normalizedCards.forEach((card) => {
+            if (terms.has(card.term)) {
+              throw new CardDataError(`${sourceName}含有重複術語：${card.term}`);
+            }
+            terms.add(card.term);
+          });
+        }
+        if (!options.allowDuplicateIds) {
+          const ids = new Set();
+          normalizedCards.forEach((card) => {
+            if (ids.has(card.id)) {
+              throw new CardDataError(`${sourceName}含有重複 id：${card.id}`);
+            }
+            ids.add(card.id);
+          });
+        }
+
+        return normalizedCards;
+      }
+
+      function validatePayload(payload, sourceName, options = {}) {
+        if (!isPlainObject(payload)) {
+          throw new CardDataError(`${sourceName}最外層必須是物件`);
+        }
+        const payloadFields = Object.keys(payload).sort();
+        if (payloadFields.length !== 2 || payloadFields[0] !== "cards" || payloadFields[1] !== "ver") {
+          throw new CardDataError(`${sourceName}最外層欄位必須且只能包含 ver 與 cards`);
+        }
+        if (payload.ver !== STORAGE_VERSION) {
+          throw new CardDataError(`${sourceName}的 ver 必須嚴格等於 1`);
+        }
+
+        return validateCards(payload.cards, sourceName, options);
+      }
+
+      function cloneCards(cards) {
+        return cards.map((card) => ({ ...card }));
+      }
+
+      function formatLocalDate(date = new Date()) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+      }
+
+      function createUniqueCardId(cards) {
+        const usedIds = new Set(cards.map((card) => card.id));
+        let candidate = Date.now();
+        while (usedIds.has(String(candidate))) {
+          candidate += 1;
+        }
+        return String(candidate);
+      }
+
+      function getStorageErrorMessage(error) {
+        const isQuotaError = error?.name === "QuotaExceededError"
+          || error?.name === "NS_ERROR_DOM_QUOTA_REACHED"
+          || error?.code === 22
+          || error?.code === 1014;
+        if (isQuotaError) {
+          return "儲存空間不足或瀏覽器拒絕寫入，請先匯出 JSON 備份";
+        }
+        return error instanceof Error && error.message
+          ? error.message
+          : "瀏覽器本機資料寫入失敗";
+      }
+
+      // 第 3、4 段：組單每次都依目前畫面重新取卡，支援動態新增、匯入及刪除。
+      function setupOrderBuilder() {
+        const builtInCards = Array.from(document.querySelectorAll(".syntax-card[id^='b']"));
+        const countElement = document.querySelector(".order-count");
+        const previewElement = document.querySelector(".order-preview");
+        const copyOrderButton = document.querySelector("#copy-order-list");
+        const clearOrderButton = document.querySelector("#clear-order-list");
+        const orderBar = document.querySelector(".order-bar");
+
+        function getCardEntry(card) {
+          const checkbox = card.querySelector(".select-control input[type='checkbox']");
+          const orderElement = card.querySelector(".syntax-card__order");
+          const orderLabel = orderElement?.querySelector("strong")?.textContent || "";
+          const orderText = orderElement ? orderElement.textContent.slice(orderLabel.length) : "";
+          return { checkbox, orderText };
+        }
+
+        function getCurrentEntries() {
+          const customCards = Array.from(document.querySelectorAll("#mine-card-grid .mine-card"));
+          return [...builtInCards, ...customCards].map(getCardEntry);
+        }
+
+        function buildOrderText(selectedEntries) {
+          const orderLines = selectedEntries.map((entry, index) => `${index + 1}. ${entry.orderText}`);
+          return ["幫我做/改一個工具,需要:", ...orderLines].join("\n");
+        }
+
+        function syncOrderBarSpacing() {
+          const safeBottomSpace = Math.ceil(orderBar.getBoundingClientRect().height) + 32;
+          document.body.style.paddingBottom = `${safeBottomSpace}px`;
+          document.documentElement.style.scrollPaddingBottom = `${safeBottomSpace}px`;
+        }
+
+        function renderOrderState() {
+          const selectedEntries = getCurrentEntries().filter((entry) => entry.checkbox?.checked);
+          const selectedCount = selectedEntries.length;
+          const hasSelection = selectedCount > 0;
+          const orderText = hasSelection ? buildOrderText(selectedEntries) : "";
+
+          countElement.textContent = `已選 ${selectedCount} 張`;
+          previewElement.textContent = orderText;
+          previewElement.hidden = !hasSelection;
+          copyOrderButton.disabled = !hasSelection || copyOrderButton.dataset.copying === "true";
+          clearOrderButton.disabled = !hasSelection;
+          window.requestAnimationFrame(syncOrderBarSpacing);
+        }
+
+        builtInCards.forEach((card) => {
+          const checkbox = card.querySelector(".select-control input[type='checkbox']");
+          checkbox.checked = false;
+          checkbox.disabled = false;
+          checkbox.addEventListener("change", renderOrderState);
+        });
+
+        copyOrderButton.addEventListener("click", () => {
+          if (!previewElement.textContent) {
+            return;
+          }
+          void runCopyAction(copyOrderButton, previewElement.textContent);
+          window.setTimeout(renderOrderState, COPY_FEEDBACK_MS + 20);
+        });
+
+        clearOrderButton.addEventListener("click", () => {
+          getCurrentEntries().forEach((entry) => {
+            entry.checkbox.checked = false;
+          });
+          selectedMineCardIds.clear();
+          renderOrderState();
+        });
+
+        window.addEventListener("resize", syncOrderBarSpacing);
+        renderOrderState();
+        return { refresh: renderOrderState };
+      }
+
+      // 第 4 段：自加卡新增、刪除、匯出、匯入與資料寫入契約集中在此。
+      function setupMyCards(orderBuilder) {
+        const toggleFormButton = document.querySelector("#toggle-mine-form");
+        const exportButton = document.querySelector("#export-mine-json");
+        const importButton = document.querySelector("#import-mine-json");
+        const fileInput = document.querySelector("#mine-json-file");
+        const form = document.querySelector("#mine-form");
+        const termInput = document.querySelector("#mine-term");
+        const plainInput = document.querySelector("#mine-plain");
+        const orderInput = document.querySelector("#mine-order");
+        const saveButton = document.querySelector("#save-mine-card");
+        const statusElement = document.querySelector("#mine-status");
+        const errorElement = document.querySelector("#mine-error");
+        const cardGrid = document.querySelector("#mine-card-grid");
+
+        function setMessage(message, type = "status") {
+          statusElement.hidden = type === "error";
+          errorElement.hidden = type !== "error";
+          statusElement.textContent = type === "error" ? "" : message;
+          errorElement.textContent = type === "error" ? message : "";
+          statusElement.classList.toggle("is-warning", type === "warning");
+        }
+
+        function setFormOpen(isOpen) {
+          form.hidden = !isOpen;
+          toggleFormButton.setAttribute("aria-expanded", String(isOpen));
+          if (isOpen && !dataMutationsLocked) {
+            termInput.focus();
+          }
+        }
+
+        function updateMutationControls() {
+          const mutationsDisabled = dataMutationsLocked || transactionInProgress;
+          toggleFormButton.disabled = mutationsDisabled;
+          importButton.disabled = mutationsDisabled;
+          saveButton.disabled = mutationsDisabled;
+          cardGrid.querySelectorAll(".delete-mine-card").forEach((button) => {
+            button.disabled = mutationsDisabled;
+          });
+          // 匯出是資料異常時的逃生口，任何鎖定狀態都保持可用。
+          exportButton.disabled = false;
+        }
+
+        function lockDataMutations(message) {
+          dataMutationsLocked = true;
+          setMessage(message, "error");
+          updateMutationControls();
+        }
+
+        function createMineCardElement(card) {
+          const article = document.createElement("article");
+          article.className = "syntax-card mine-card";
+          article.dataset.cardId = card.id;
+
+          const body = document.createElement("div");
+          body.className = "syntax-card__body";
+
+          const heading = document.createElement("h3");
+          heading.textContent = card.term;
+
+          const plain = document.createElement("p");
+          plain.className = "syntax-card__plain";
+          plain.textContent = card.plain;
+
+          const order = document.createElement("p");
+          order.className = "syntax-card__order";
+          const orderLabel = document.createElement("strong");
+          orderLabel.textContent = "下單例句：";
+          order.append(orderLabel, document.createTextNode(card.order));
+
+          const sample = document.createElement("div");
+          sample.className = "sample-box";
+          sample.setAttribute("aria-label", "自加卡靜態示意");
+          sample.textContent = "自加卡";
+
+          body.append(heading, plain, order, sample);
+
+          const footer = document.createElement("footer");
+          footer.className = "syntax-card__footer";
+
+          const selectLabel = document.createElement("label");
+          selectLabel.className = "select-control";
+          const checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.className = "mine-order-checkbox";
+          checkbox.checked = selectedMineCardIds.has(card.id);
+          checkbox.setAttribute("aria-label", `選入組單：${card.term}`);
+          selectLabel.append(checkbox, document.createTextNode("選入組單"));
+
+          const actions = document.createElement("div");
+          actions.className = "mine-card__actions";
+
+          const copyButton = document.createElement("button");
+          copyButton.type = "button";
+          copyButton.className = "copy-mine-order";
+          copyButton.textContent = "複製下單句";
+
+          const deleteButton = document.createElement("button");
+          deleteButton.type = "button";
+          deleteButton.className = pendingDeleteId === card.id
+            ? "delete-mine-card is-confirming"
+            : "delete-mine-card";
+          deleteButton.textContent = pendingDeleteId === card.id ? "確定刪除?" : "刪除";
+
+          actions.append(copyButton, deleteButton);
+          footer.append(selectLabel, actions);
+          article.append(body, footer);
+          return article;
+        }
+
+        function renderMineCards() {
+          const fragment = document.createDocumentFragment();
+          myCards.forEach((card) => fragment.appendChild(createMineCardElement(card)));
+          cardGrid.replaceChildren(fragment);
+          updateMutationControls();
+        }
+
+        /*
+         * 七步中央交易：快照 → 工作副本 → 寫唯一鍵 → 回讀驗證 → 提交畫面
+         * → 失敗還原 → 還原後再驗證。新增、刪除、匯入只可由此改資料。
+         */
+        function commitCardsTransaction(mutator, options) {
+          if (dataMutationsLocked) {
+            setMessage("資料異動目前已停用，請先匯出 JSON 備份並停止操作", "error");
+            return false;
+          }
+          if (transactionInProgress) {
+            return false;
+          }
+
+          const cardsSnapshot = cloneCards(myCards);
+          const selectedSnapshot = new Set(selectedMineCardIds);
+          let storageSnapshot;
+          try {
+            storageSnapshot = localStorage.getItem(STORAGE_KEY);
+          } catch (error) {
+            lockDataMutations("無法讀取本機自加卡資料，為避免覆蓋已停止資料異動");
+            return false;
+          }
+
+          transactionInProgress = true;
+          updateMutationControls();
+
+          try {
+            const mutationResult = mutator(cloneCards(cardsSnapshot), new Set(selectedSnapshot));
+            const nextCards = validateCards(mutationResult.cards, `${options.operationName}結果`);
+            const validIds = new Set(nextCards.map((card) => card.id));
+            const nextSelectedIds = new Set(
+              [...mutationResult.selectedIds].filter((id) => validIds.has(id))
+            );
+            const nextPayload = { ver: STORAGE_VERSION, cards: nextCards };
+            const expectedStorage = JSON.stringify(nextPayload);
+
+            try {
+              localStorage.setItem(STORAGE_KEY, expectedStorage);
+            } catch (error) {
+              throw new CardDataError(getStorageErrorMessage(error));
+            }
+
+            let readBackRaw;
+            try {
+              readBackRaw = localStorage.getItem(STORAGE_KEY);
+            } catch (error) {
+              throw new CardDataError(`寫入後無法回讀：${getStorageErrorMessage(error)}`);
+            }
+            if (readBackRaw !== expectedStorage) {
+              throw new CardDataError("寫入後回讀內容不一致");
+            }
+
+            let readBackPayload;
+            try {
+              readBackPayload = JSON.parse(readBackRaw);
+            } catch (error) {
+              throw new CardDataError("寫入後回讀的 JSON 無法解析");
+            }
+            const verifiedCards = validatePayload(readBackPayload, "寫入後回讀");
+            if (JSON.stringify(verifiedCards) !== JSON.stringify(nextCards)) {
+              throw new CardDataError("寫入後驗證資料與預期不一致");
+            }
+
+            myCards = cloneCards(nextCards);
+            selectedMineCardIds = nextSelectedIds;
+            pendingDeleteId = null;
+            renderMineCards();
+            orderBuilder.refresh();
+            const successMessage = typeof options.successMessage === "function"
+              ? options.successMessage()
+              : options.successMessage;
+            setMessage(successMessage, "status");
+            transactionInProgress = false;
+            updateMutationControls();
+            return true;
+          } catch (error) {
+            const failureReason = getStorageErrorMessage(error);
+            myCards = cloneCards(cardsSnapshot);
+            selectedMineCardIds = new Set(selectedSnapshot);
+            pendingDeleteId = null;
+
+            let rollbackSucceeded = true;
+            try {
+              const currentStorage = localStorage.getItem(STORAGE_KEY);
+              if (currentStorage !== storageSnapshot) {
+                if (storageSnapshot === null) {
+                  localStorage.removeItem(STORAGE_KEY);
+                } else {
+                  localStorage.setItem(STORAGE_KEY, storageSnapshot);
+                }
+              }
+              if (localStorage.getItem(STORAGE_KEY) !== storageSnapshot) {
+                throw new Error("還原後回讀內容不一致");
+              }
+              renderMineCards();
+              orderBuilder.refresh();
+            } catch (rollbackError) {
+              rollbackSucceeded = false;
+            }
+
+            transactionInProgress = false;
+            if (rollbackSucceeded) {
+              setMessage(`${options.operationName}失敗，資料已還原：${failureReason}`, "error");
+              updateMutationControls();
+            } else {
+              lockDataMutations("資料還原失敗，請立即匯出備份並停止操作");
+            }
+            return false;
+          }
+        }
+
+        function mergeImportedCards(importedCards, workingCards, workingSelectedIds, stats) {
+          const importedByTerm = new Map();
+          importedCards.forEach((card) => {
+            // Map 更新值但保留第一次出現的位置；內容採最後一筆。
+            importedByTerm.set(card.term, card);
+          });
+
+          const selectedTerms = new Set(
+            workingCards
+              .filter((card) => workingSelectedIds.has(card.id))
+              .map((card) => card.term)
+          );
+          const mergedCards = cloneCards(workingCards);
+          const existingIndexes = new Map(mergedCards.map((card, index) => [card.term, index]));
+
+          importedByTerm.forEach((importedCard, term) => {
+            if (existingIndexes.has(term)) {
+              mergedCards[existingIndexes.get(term)] = { ...importedCard };
+              stats.updated += 1;
+            } else {
+              existingIndexes.set(term, mergedCards.length);
+              mergedCards.push({ ...importedCard });
+              stats.added += 1;
+            }
+          });
+
+          const normalizedMergedCards = validateCards(mergedCards, "匯入合併結果");
+          const nextSelectedIds = new Set(
+            normalizedMergedCards
+              .filter((card) => selectedTerms.has(card.term))
+              .map((card) => card.id)
+          );
+          return { cards: normalizedMergedCards, selectedIds: nextSelectedIds };
+        }
+
+        function loadInitialCards() {
+          let storedValue;
+          try {
+            storedValue = localStorage.getItem(STORAGE_KEY);
+          } catch (error) {
+            myCards = [];
+            renderMineCards();
+            orderBuilder.refresh();
+            lockDataMutations("無法讀取本機自加卡資料，為避免覆蓋已停止資料異動");
+            return;
+          }
+
+          if (storedValue === null) {
+            myCards = [];
+            selectedMineCardIds.clear();
+            renderMineCards();
+            orderBuilder.refresh();
+            updateMutationControls();
+            return;
+          }
+
+          try {
+            const storedPayload = JSON.parse(storedValue);
+            myCards = validatePayload(storedPayload, "本機自加卡資料");
+            selectedMineCardIds.clear();
+            renderMineCards();
+            orderBuilder.refresh();
+            updateMutationControls();
+          } catch (error) {
+            myCards = [];
+            selectedMineCardIds.clear();
+            renderMineCards();
+            orderBuilder.refresh();
+            lockDataMutations(`本機自加卡資料格式錯誤，為避免覆蓋已停止資料異動：${error.message}`);
+          }
+        }
+
+        toggleFormButton.addEventListener("click", () => {
+          setFormOpen(form.hidden);
+        });
+
+        form.addEventListener("submit", (event) => {
+          event.preventDefault();
+          if (transactionInProgress || dataMutationsLocked) {
+            return;
+          }
+
+          const term = termInput.value.trim();
+          const plain = plainInput.value.trim();
+          const order = orderInput.value.trim();
+          if (!term || !plain || !order) {
+            setMessage("術語、白話一句與下單例句全部必填", "error");
+            return;
+          }
+          if (myCards.some((card) => card.term === term)) {
+            setMessage("已有相同術語，請修改術語名稱", "error");
+            return;
+          }
+
+          const newCard = {
+            id: createUniqueCardId(myCards),
+            term,
+            plain,
+            order,
+            zone: "mine",
+            created: formatLocalDate()
+          };
+          const saved = commitCardsTransaction(
+            (workingCards, workingSelectedIds) => ({
+              cards: [...workingCards, newCard],
+              selectedIds: workingSelectedIds
+            }),
+            { operationName: "新增卡片", successMessage: "自加卡已儲存" }
+          );
+          if (saved) {
+            form.reset();
+            setFormOpen(false);
+          }
+        });
+
+        cardGrid.addEventListener("change", (event) => {
+          const checkbox = event.target.closest(".mine-order-checkbox");
+          if (!checkbox) {
+            return;
+          }
+          const cardElement = checkbox.closest(".mine-card");
+          const cardId = cardElement.dataset.cardId;
+          if (checkbox.checked) {
+            selectedMineCardIds.add(cardId);
+          } else {
+            selectedMineCardIds.delete(cardId);
+          }
+          orderBuilder.refresh();
+        });
+
+        cardGrid.addEventListener("click", (event) => {
+          const cardElement = event.target.closest(".mine-card");
+          if (!cardElement) {
+            return;
+          }
+          const cardId = cardElement.dataset.cardId;
+          const card = myCards.find((item) => item.id === cardId);
+          if (!card) {
+            return;
+          }
+
+          const copyButton = event.target.closest(".copy-mine-order");
+          if (copyButton) {
+            void runCopyAction(copyButton, card.order);
+            return;
+          }
+
+          const deleteButton = event.target.closest(".delete-mine-card");
+          if (!deleteButton || dataMutationsLocked || transactionInProgress) {
+            return;
+          }
+          if (pendingDeleteId !== cardId) {
+            pendingDeleteId = cardId;
+            renderMineCards();
+            setMessage(`再次按下「確定刪除?」才會刪除「${card.term}」`, "warning");
+            return;
+          }
+
+          commitCardsTransaction(
+            (workingCards, workingSelectedIds) => {
+              workingSelectedIds.delete(cardId);
+              return {
+                cards: workingCards.filter((item) => item.id !== cardId),
+                selectedIds: workingSelectedIds
+              };
+            },
+            { operationName: "刪除卡片", successMessage: `自加卡「${card.term}」已刪除` }
+          );
+        });
+
+        exportButton.addEventListener("click", () => {
+          if (myCards.length === 0) {
+            setMessage("目前沒有自加卡", "error");
+            return;
+          }
+
+          try {
+            const exportPayload = { ver: STORAGE_VERSION, cards: cloneCards(myCards) };
+            const jsonText = JSON.stringify(exportPayload, null, 2);
+            const blob = new Blob([jsonText], { type: "application/json;charset=utf-8" });
+            const downloadUrl = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = downloadUrl;
+            link.download = `語法零件樣品板_自加卡_${formatLocalDate()}.json`;
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.setTimeout(() => URL.revokeObjectURL(downloadUrl), 0);
+            setMessage(`已匯出 ${myCards.length} 張自加卡`, "status");
+          } catch (error) {
+            setMessage(`匯出失敗：${error.message || "無法建立 JSON 檔案"}`, "error");
+          }
+        });
+
+        importButton.addEventListener("click", () => {
+          if (!dataMutationsLocked && !transactionInProgress) {
+            fileInput.click();
+          }
+        });
+
+        fileInput.addEventListener("change", async () => {
+          const file = fileInput.files?.[0];
+          if (!file) {
+            fileInput.value = "";
+            return;
+          }
+
+          try {
+            let parsedPayload;
+            try {
+              parsedPayload = JSON.parse(await file.text());
+            } catch (error) {
+              setMessage(`JSON語法錯誤：${error.message}`, "error");
+              return;
+            }
+
+            let importedCards;
+            try {
+              importedCards = validatePayload(parsedPayload, "匯入檔", {
+                allowDuplicateTerms: true,
+                allowDuplicateIds: true
+              });
+            } catch (error) {
+              setMessage(`匯入格式錯誤：${error.message}`, "error");
+              return;
+            }
+
+            const stats = { added: 0, updated: 0 };
+            commitCardsTransaction(
+              (workingCards, workingSelectedIds) => mergeImportedCards(
+                importedCards,
+                workingCards,
+                workingSelectedIds,
+                stats
+              ),
+              {
+                operationName: "匯入 JSON",
+                successMessage: () => `匯入完成：新增 ${stats.added} 張、更新 ${stats.updated} 張、匯入後總數 ${myCards.length} 張`
+              }
+            );
+          } finally {
+            // 每次成功或失敗都清空，允許再次選擇同一檔案。
+            fileInput.value = "";
+          }
+        });
+
+        setFormOpen(false);
+        loadInitialCards();
+      }
+
       setupOrderCopyButtons();
       setupLiveSubstitutionDemo();
       setupCopyButtonDemo();
       setupTypeToConfirmDemo();
       setupCheckboxToggleDemo();
+      const orderBuilder = setupOrderBuilder();
+      setupMyCards(orderBuilder);
     })();
   </script>
 </body>
